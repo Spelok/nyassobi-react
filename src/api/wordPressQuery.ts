@@ -30,7 +30,6 @@ export async function wpquery<TData = unknown, TVariables extends Record<string,
 
     return data;
   } catch (error) {
-    console.error("GraphQL query error:", error);
     throw error;
   }
 }
