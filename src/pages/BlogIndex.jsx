@@ -4,6 +4,7 @@ import { useWordPressPosts } from "../hooks/useWordPressContent";
 import Loader from "../components/Loader";
 
 import styles2 from "./HomePage.module.scss";
+import styles from "./BlogIndex.module.scss";
 import TitleNyasso from "../TitleNyasso";
 
 const ensureLeadingSlash = (value) => {
@@ -20,112 +21,6 @@ const stripHtml = (value) => {
   }
 
   return value.replace(/<[^>]+>/g, "").trim();
-};
-
-const filtersContainerStyle = {
-  display: "flex",
-  flexWrap: "wrap",
-  gap: "0.75rem",
-  margin: "1rem 0 2rem",
-};
-
-const filterButtonBaseStyle = {
-  borderRadius: "999px",
-  border: "1px solid #ED5E24",
-  background: "transparent",
-  color: "inherit",
-  padding: "0.5rem 1rem",
-  fontSize: "0.95rem",
-  fontWeight: 600,
-  cursor: "pointer",
-  transition: "all 0.2s ease",
-};
-
-const tagListStyle = {
-  display: "flex",
-  flexWrap: "wrap",
-  gap: "0.5rem",
-};
-
-const tagItemStyle = {
-  borderRadius: "999px",
-  background: "rgba(237, 94, 36, 0.15)",
-  color: "#ED5E24",
-  padding: "0.35rem 0.85rem",
-  fontSize: "0.85rem",
-  fontWeight: 600,
-};
-
-const metaRowStyle = {
-  display: "flex",
-  alignItems: "center",
-  flexWrap: "wrap",
-  gap: "0.75rem",
-  marginTop: "0.5rem",
-};
-
-const paginationContainerStyle = {
-  display: "flex",
-  flexWrap: "wrap",
-  gap: "0.75rem",
-  justifyContent: "center",
-  marginTop: "2rem",
-};
-
-const paginationButtonStyle = {
-  minWidth: "2.5rem",
-  padding: "0.5rem 1rem",
-  borderRadius: "999px",
-  border: "1px solid rgba(255,255,255,0.35)",
-  background: "transparent",
-  color: "inherit",
-  cursor: "pointer",
-  fontWeight: 600,
-  transition: "all 0.2s ease",
-};
-
-const paginationActiveButtonStyle = {
-  background: "linear-gradient(135deg, #ED5E24, #F38B4A)",
-  borderColor: "#ED5E24",
-  color: "#fff",
-};
-
-const paginationDisabledStyle = {
-  opacity: 0.4,
-  cursor: "not-allowed",
-};
-
-const postImageWrapperStyle = {
-  marginTop: "1rem",
-  borderRadius: "16px",
-  overflow: "hidden",
-  background: "rgba(255,255,255,0.08)",
-  width: "400px",
-  maxWidth: "100%",
-  height: "300px",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  marginLeft: "auto",
-  marginRight: "auto",
-};
-
-const postImageStyle = {
-  maxWidth: "100%",
-  maxHeight: "100%",
-  width: "500px",
-  height: "500px",
-  objectFit: "contain",
-  display: "block",
-  background: "#111",
-};
-
-const dividerStyle = {
-  marginTop: "1.5rem",
-  width: "100%",
-  height: "0",
-  border: "0",
-  borderTop: "1px dashed rgba(255,255,255,0.45)",
 };
 
 const PAGE_SIZE = 5;
@@ -236,22 +131,25 @@ function BlogIndex() {
             <TitleNyasso title="News" subtitle="Les dernières actualités" />
 
             {allCategories.length > 0 ? (
-              <div style={filtersContainerStyle}>
+              <div className={styles.filters}>
                 {allCategories.map((category) => {
                   const isSelected = selectedCategories.includes(category.slug);
                   const isDimmed = selectedCategories.length > 0 && !isSelected;
+
+                  const buttonClasses = [
+                    styles.filterButton,
+                    isSelected ? styles.filterButtonSelected : "",
+                    isDimmed ? styles.filterButtonDimmed : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" ");
 
                   return (
                     <button
                       key={category.slug}
                       type="button"
                       onClick={() => toggleCategory(category.slug)}
-                      style={{
-                        ...filterButtonBaseStyle,
-                        background: isSelected ? "linear-gradient(135deg, #ED5E24, #F38B4A)" : "transparent",
-                        color: isSelected ? "#fff" : "inherit",
-                        opacity: isDimmed ? 0.35 : 1,
-                      }}
+                      className={buttonClasses}
                     >
                       {category.name}
                     </button>
@@ -261,11 +159,7 @@ function BlogIndex() {
                   <button
                     type="button"
                     onClick={handleResetFilters}
-                    style={{
-                      ...filterButtonBaseStyle,
-                      borderColor: "rgba(255,255,255,0.35)",
-                      color: "rgba(255,255,255,0.7)",
-                    }}
+                    className={`${styles.filterButton} ${styles.filterButtonReset}`}
                   >
                     Réinitialiser
                   </button>
@@ -277,7 +171,7 @@ function BlogIndex() {
               <p>Aucun article ne correspond à ces catégories pour le moment.</p>
             ) : (
               <>
-                <ul style={{ listStyle: "none", padding: 0, margin: "2rem 0", display: "grid", gap: "2rem" }}>
+                <ul className={styles.postList}>
                   {paginatedPosts.map((post, index) => {
                     const targetUri = ensureLeadingSlash(post.uri);
                     const publicationDate = post.date
@@ -292,21 +186,21 @@ function BlogIndex() {
                     const imageAlt = post.featuredImage?.altText || stripHtml(post.title);
 
                     return (
-                      <li key={post.id} style={{ paddingBottom: "1.5rem" }}>
+                      <li key={post.id} className={styles.postItem}>
                         <div>
                           <h2>
                             <Link to={targetUri}>
                               <TitleNyasso subtitle={ post?.title }/>
                             </Link>
                           </h2>
-                          <div style={metaRowStyle}>
+                          <div className={styles.metaRow}>
                             {publicationDate ? (
                               <p style={{ fontStyle: "italic", margin: 0 }}>Le {publicationDate}</p>
                             ) : null}
                             {post.categories.length > 0 ? (
-                              <div style={tagListStyle}>
+                              <div className={styles.tagList}>
                                 {post.categories.map((category) => (
-                                  <span key={`${post.id}-${category.slug}`} style={tagItemStyle}>
+                                  <span key={`${post.id}-${category.slug}`} className={styles.tag}>
                                     {category.name}
                                   </span>
                                 ))}
@@ -315,37 +209,34 @@ function BlogIndex() {
                           </div>
                         </div>
                         {imageSrc ? (
-                          <Link to={targetUri} style={{ display: "block" }}>
-                            <div style={postImageWrapperStyle}>
-                              <img src={imageSrc} alt={imageAlt} style={postImageStyle} loading="lazy" />
+                          <Link to={targetUri} className={styles.postImageLink}>
+                            <div className={styles.postImageWrapper}>
+                              <img src={imageSrc} alt={imageAlt} className={styles.postImage} loading="lazy" />
                             </div>
                           </Link>
                         ) : null}
                         {post.excerpt && (
                           <div
-                            style={{ marginTop: "0.75rem" }}
+                            className={styles.postExcerpt}
                             dangerouslySetInnerHTML={{ __html: post.excerpt }}
                           />
                         )}
-                        <Link to={targetUri} style={{ display: "inline-block", marginTop: "0.75rem" }}>
+                        <Link to={targetUri} className={styles.readMore}>
                           Lire la suite →
                         </Link>
-                        {!isLastItem ? <div style={dividerStyle} aria-hidden="true" /> : null}
+                        {!isLastItem ? <div className={styles.divider} aria-hidden="true" /> : null}
                       </li>
                     );
                   })}
                 </ul>
 
                 {totalPages > 1 ? (
-                  <div style={paginationContainerStyle}>
+                  <div className={styles.pagination}>
                     <button
                       type="button"
                       onClick={() => handlePageChange(currentPage - 1)}
                       disabled={currentPage === 1}
-                      style={{
-                        ...paginationButtonStyle,
-                        ...(currentPage === 1 ? paginationDisabledStyle : null),
-                      }}
+                      className={`${styles.paginationButton} ${currentPage === 1 ? styles.paginationButtonDisabled : ""}`.trim()}
                     >
                       Précédent
                     </button>
@@ -358,10 +249,7 @@ function BlogIndex() {
                           key={pageNumber}
                           type="button"
                           onClick={() => handlePageChange(pageNumber)}
-                          style={{
-                            ...paginationButtonStyle,
-                            ...(isActive ? paginationActiveButtonStyle : null),
-                          }}
+                          className={`${styles.paginationButton} ${isActive ? styles.paginationButtonActive : ""}`.trim()}
                         >
                           {pageNumber}
                         </button>
@@ -371,10 +259,7 @@ function BlogIndex() {
                       type="button"
                       onClick={() => handlePageChange(currentPage + 1)}
                       disabled={currentPage === totalPages}
-                      style={{
-                        ...paginationButtonStyle,
-                        ...(currentPage === totalPages ? paginationDisabledStyle : null),
-                      }}
+                      className={`${styles.paginationButton} ${currentPage === totalPages ? styles.paginationButtonDisabled : ""}`.trim()}
                     >
                       Suivant
                     </button>

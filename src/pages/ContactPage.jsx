@@ -1,6 +1,8 @@
 import { useCallback, useMemo, useState } from "react";
 import FooterSocialWidget from "../components/FooterSocialWidget";
 import styles from "./ContactPage.module.scss";
+import layoutStyles from "./HomePage.module.scss";
+import TitleNyasso from "../TitleNyasso";
 
 const CONTACT_EMAIL = "nyassobi.association@gmail.com";
 
@@ -88,113 +90,119 @@ function ContactPage() {
   );
 
   return (
-    <div className={styles.contactPage}>
-      <section className={styles.contactIntro}>
-        <h1>Contact</h1>
-        <p>
-          Une question, une proposition de collaboration, ou simplement envie de nous laisser un mot ?
-          Utilisez le formulaire ci-dessous ou contactez-nous directement via nos réseaux.
-        </p>
-      </section>
+    <div className={layoutStyles.mainContent}>
+      <div className={layoutStyles.mainContent}>
+        <div className={layoutStyles.homePage}>
+          <div className={styles.contactPage}>
+            <section className={styles.contactIntro}>
+              <TitleNyasso title="Contact"/>
+              <p>
+                Une question, une proposition de collaboration, ou simplement envie de nous laisser un mot ?
+                Utilisez le formulaire ci-dessous ou contactez-nous directement via nos réseaux.
+              </p>
+            </section>
 
-      <section className={styles.contactContent}>
-        <form className={styles.contactForm} onSubmit={handleSubmit} noValidate>
-          <div className={styles.formField}>
-            <label htmlFor="fullname" className={styles.label}>
-              Nom et prénom
-            </label>
-            <input
-              id="fullname"
-              name="fullname"
-              type="text"
-              className={styles.input}
-              value={formValues.fullname}
-              onChange={handleChange}
-              placeholder="Nyasso Bichon"
-              autoComplete="name"
-            />
-            {errors.fullname ? <span className={styles.error}>{errors.fullname}</span> : null}
+            <section className={styles.contactContent}>
+              <form className={styles.contactForm} onSubmit={handleSubmit} noValidate>
+                <div className={styles.formField}>
+                  <label htmlFor="fullname" className={styles.label}>
+                    Nom et prénom
+                  </label>
+                  <input
+                    id="fullname"
+                    name="fullname"
+                    type="text"
+                    className={styles.input}
+                    value={formValues.fullname}
+                    onChange={handleChange}
+                    placeholder="Nyasso Bichon"
+                    autoComplete="name"
+                  />
+                  {errors.fullname ? <span className={styles.error}>{errors.fullname}</span> : null}
+                </div>
+
+                <div className={styles.formField}>
+                  <label htmlFor="email" className={styles.label}>
+                    Adresse e-mail
+                  </label>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    className={styles.input}
+                    value={formValues.email}
+                    onChange={handleChange}
+                    placeholder="vous@example.com"
+                    autoComplete="email"
+                    required
+                  />
+                  {errors.email ? <span className={styles.error}>{errors.email}</span> : null}
+                </div>
+
+                <div className={styles.formField}>
+                  <label htmlFor="subject" className={styles.label}>
+                    Objet
+                  </label>
+                  <input
+                    id="subject"
+                    name="subject"
+                    type="text"
+                    className={styles.input}
+                    value={formValues.subject}
+                    onChange={handleChange}
+                    placeholder="Une demande, une proposition..."
+                  />
+                  {errors.subject ? <span className={styles.error}>{errors.subject}</span> : null}
+                </div>
+
+                <div className={styles.formField}>
+                  <label htmlFor="message" className={styles.label}>
+                    Message
+                  </label>
+                  <textarea
+                    id="message"
+                    name="message"
+                    className={styles.textarea}
+                    value={formValues.message}
+                    onChange={handleChange}
+                    placeholder="Donnez-nous le maximum de détails, Nyasso adore ça !"
+                    rows={6}
+                  />
+                  {errors.message ? <span className={styles.error}>{errors.message}</span> : null}
+                </div>
+
+                <button type="submit" className={styles.submitButton} disabled={submitting}>
+                  Envoyer
+                </button>
+
+                {status.message ? (
+                  <p
+                    className={`${styles.statusMessage} ${
+                      status.type === "success" ? styles.statusSuccess : styles.statusError
+                    }`}
+                  >
+                    {status.message}
+                  </p>
+                ) : null}
+              </form>
+
+              <aside className={styles.socialCard}>
+                <h2>Retrouvez Nyassobi</h2>
+                <p>
+                  Nous partageons toutes nos actualités en ligne. Suivez-nous pour ne rien manquer ou envoyez-nous un message privé.
+                </p>
+                <FooterSocialWidget />
+                <p>
+                  E-mail direct :{" "}
+                  <a href={`mailto:${CONTACT_EMAIL}`} style={{ color: "#ED5E24", fontWeight: 600 }}>
+                    {CONTACT_EMAIL}
+                  </a>
+                </p>
+              </aside>
+            </section>
           </div>
-
-          <div className={styles.formField}>
-            <label htmlFor="email" className={styles.label}>
-              Adresse e-mail
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              className={styles.input}
-              value={formValues.email}
-              onChange={handleChange}
-              placeholder="vous@example.com"
-              autoComplete="email"
-              required
-            />
-            {errors.email ? <span className={styles.error}>{errors.email}</span> : null}
-          </div>
-
-          <div className={styles.formField}>
-            <label htmlFor="subject" className={styles.label}>
-              Objet
-            </label>
-            <input
-              id="subject"
-              name="subject"
-              type="text"
-              className={styles.input}
-              value={formValues.subject}
-              onChange={handleChange}
-              placeholder="Une demande, une proposition..."
-            />
-            {errors.subject ? <span className={styles.error}>{errors.subject}</span> : null}
-          </div>
-
-          <div className={styles.formField}>
-            <label htmlFor="message" className={styles.label}>
-              Message
-            </label>
-            <textarea
-              id="message"
-              name="message"
-              className={styles.textarea}
-              value={formValues.message}
-              onChange={handleChange}
-              placeholder="Donnez-nous le maximum de détails, Nyasso adore ça !"
-              rows={6}
-            />
-            {errors.message ? <span className={styles.error}>{errors.message}</span> : null}
-          </div>
-
-          <button type="submit" className={styles.submitButton} disabled={submitting}>
-            Envoyer
-          </button>
-
-          {status.message ? (
-            <p
-              className={`${styles.statusMessage} ${
-                status.type === "success" ? styles.statusSuccess : styles.statusError
-              }`}
-            >
-              {status.message}
-            </p>
-          ) : null}
-        </form>
-
-        <aside className={styles.socialCard}>
-          <h2>Retrouvez Nyassobi</h2>
-          <p>
-            Nous partageons toutes nos actualités en ligne. Suivez-nous pour ne rien manquer ou envoyez-nous un message privé.
-          </p>
-          <FooterSocialWidget />
-          <p>
-            E-mail direct :{" "}
-            <a href={`mailto:${CONTACT_EMAIL}`} style={{ color: "#ED5E24", fontWeight: 600 }}>
-              {CONTACT_EMAIL}
-            </a>
-          </p>
-        </aside>
-      </section>
+        </div>
+      </div>
     </div>
   );
 }

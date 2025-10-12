@@ -1,40 +1,45 @@
-import styles from './Navbar.module.scss';
-import { NavLink } from 'react-router-dom';
-import { useMemo, useState } from 'react';
-import { useMenu } from './hooks/createWPMenu';
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { NavLink, useLocation } from "react-router-dom";
+import { useMenu } from "./hooks/createWPMenu";
+import styles from "./Navbar.module.scss";
 
 function Navbar() {
-  const [menuBurgerCss, setMenuBurgerCss] = useState(styles['unclicked']);
-  const [menuClass, setMenuClass] = useState(`${styles['menu-mobile']} ${styles['hidden']}`);
-  const [isMenuClicked, setIsMenuClicked] = useState(false);
   const { menuItems, loading, error } = useMenu();
+  const topLevelItems = useMemo(() => menuItems ?? [], [menuItems]);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
 
-  const updateMenu = () => {
-    if (!isMenuClicked) {
-      setMenuBurgerCss(styles['clicked']);
-      setMenuClass(`${styles['menu-mobile']} ${styles['visible']}`);
-    } else {
-      setMenuBurgerCss(styles['unclicked']);
-      setMenuClass(`${styles['menu-mobile']} ${styles['hidden']}`);
-    }
+  const closeMenu = useCallback(() => {
+    setIsMenuOpen(false);
+  }, []);
 
-    setIsMenuClicked(!isMenuClicked);
+  useEffect(() => {
+    closeMenu();
+  }, [location.pathname, closeMenu]);
+
+  const toggleMenu = () => {
+    setIsMenuOpen((previous) => !previous);
   };
 
-  const topLevelItems = useMemo(() => menuItems ?? [], [menuItems]);
+  const renderMenuLink = (item, keySuffix = "", onNavigate) => {
+    const isExternal = item.path.startsWith("http") || item.path.startsWith("mailto:");
 
-  const renderMenuLink = (item, keySuffix = '') => {
-    const isExternal = item.path.startsWith('http') || item.path.startsWith('mailto:');
+    const handleClick = () => {
+      if (onNavigate) {
+        onNavigate();
+      }
+    };
 
     if (isExternal) {
-      const isMailto = item.path.startsWith('mailto:');
+      const isMailto = item.path.startsWith("mailto:");
 
       return (
-        <div key={`${item.id}${keySuffix}`} className={styles['item']}>
+        <div key={`${item.id}${keySuffix}`} className={styles.item}>
           <a
             href={item.path}
-            target={isMailto ? undefined : '_blank'}
-            rel={isMailto ? undefined : 'noreferrer noopener'}
+            target={isMailto ? undefined : "_blank"}
+            rel={isMailto ? undefined : "noreferrer noopener"}
+            onClick={handleClick}
           >
             {item.label}
           </a>
@@ -45,21 +50,22 @@ function Navbar() {
     return (
       <NavLink
         key={`${item.id}${keySuffix}`}
-        className={(navData) => (navData.isActive ? styles['active'] : '')}
+        className={(navData) => (navData.isActive ? styles.active : "")}
         to={item.path}
+        onClick={handleClick}
       >
-        <div className={styles['item']}>{item.label}</div>
+        <div className={styles.item}>{item.label}</div>
       </NavLink>
     );
   };
 
-  const renderMenuItem = (item) => {
+  const renderDesktopMenuItem = (item) => {
     if (item.children.length > 0) {
       return (
-        <div key={item.id} className={`${styles['menu-deroulant']} ${styles['active']}`}>
-          {renderMenuLink(item, '-parent')}
-          <div className={styles['sous-menu']}>
-            {item.children.map((child) => renderMenuLink(child, '-child'))}
+        <div key={item.id} className={styles.menuDropdown}>
+          {renderMenuLink(item, "-parent")}
+          <div className={styles.dropdownContent}>
+            {item.children.map((child) => renderMenuLink(child, "-child"))}
           </div>
         </div>
       );
@@ -68,15 +74,26 @@ function Navbar() {
     return renderMenuLink(item);
   };
 
+  const renderMobileMenuItem = (item) => (
+    <div key={`${item.id}-mobile`} className={styles.menuMobileItem}>
+      {renderMenuLink(item, "-mobile", closeMenu)}
+      {item.children.length > 0 ? (
+        <div className={styles.menuMobileChildren}>
+          {item.children.map((child) => renderMenuLink(child, "-mobile-child", closeMenu))}
+        </div>
+      ) : null}
+    </div>
+  );
+
   const interleaveSeparators = (items) => {
     const result = [];
 
     items.forEach((item, index) => {
-      result.push(renderMenuItem(item));
+      result.push(renderDesktopMenuItem(item));
 
       if (index < items.length - 1) {
         result.push(
-          <div key={`separator-${index}`} style={{ color: 'white' }}>
+          <div key={`separator-${index}`} className={styles.separator}>
             |
           </div>,
         );
@@ -86,35 +103,41 @@ function Navbar() {
     return result;
   };
 
-  return (
-    <>
-      <div className={styles['nav']}>
-        {loading && <div className={styles['item']}>Chargement...</div>}
-        {error && !loading && (
-          <div className={styles['item']}>Impossible de charger le menu</div>
-        )}
-        {!loading && !error && interleaveSeparators(topLevelItems)}
+  const mobileMenuId = "navbar-mobile-menu";
 
-        {/* <div className={styles['nav-mobile']}>
-          <div className={styles['hamburger']} onClick={updateMenu}>
-            <span className={`${styles['barHamburger']} ${menuBurgerCss}`}></span>
-            <span className={`${styles['barHamburger']} ${menuBurgerCss}`}></span>
-            <span className={`${styles['barHamburger']} ${menuBurgerCss}`}></span>
-          </div>
+  return (
+    <header className={styles.navContainer}>
+      <nav className={styles.nav} aria-label="Navigation principale">
+        <div className={styles.menuDesktop}>
+          {loading && <div className={styles.item}>Chargement...</div>}
+          {error && !loading && <div className={styles.item}>Impossible de charger le menu</div>}
+          {!loading && !error && interleaveSeparators(topLevelItems)}
         </div>
-        <div className={menuClass}>
-          <NavLink className={(navData) => (navData.isActive ? styles['active'] : '')} to={'/'}>
-            <div className={styles['item']}>Accueil</div>
-          </NavLink>
-          <NavLink className={(navData) => (navData.isActive ? styles['active'] : '')} to={'/donation'}>
-            <div className={styles['item']}>Faire un don</div>
-          </NavLink>
-          <NavLink className={(navData) => (navData.isActive ? styles['active'] : '')} to={'mailto:nyassobi.association@gmail.com'}>
-            <div className={styles['item']}>Contact</div>
-          </NavLink>
-        </div> */}
+
+        <button
+          type="button"
+          className={`${styles.menuToggle} ${isMenuOpen ? styles.menuToggleOpen : ""}`}
+          onClick={toggleMenu}
+          aria-expanded={isMenuOpen}
+          aria-controls={mobileMenuId}
+          aria-label={isMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+        >
+          <span className={`${styles.menuToggleLine} ${styles.menuToggleLineTop}`} />
+          <span className={`${styles.menuToggleLine} ${styles.menuToggleLineMiddle}`} />
+          <span className={`${styles.menuToggleLine} ${styles.menuToggleLineBottom}`} />
+        </button>
+      </nav>
+
+      <div
+        id={mobileMenuId}
+        className={`${styles.menuMobilePanel} ${isMenuOpen ? styles.menuMobilePanelOpen : ""}`}
+        hidden={!isMenuOpen}
+      >
+        {loading && <div className={styles.item}>Chargement...</div>}
+        {error && !loading && <div className={styles.item}>Impossible de charger le menu</div>}
+        {!loading && !error && topLevelItems.map((item) => renderMobileMenuItem(item))}
       </div>
-    </>
+    </header>
   );
 }
 
