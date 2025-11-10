@@ -3,6 +3,7 @@
   display: flex;
   justify-content: center;
   padding: clamp(2rem, 5vw, 4rem) clamp(1.25rem, 4vw, 3.5rem);
+  padding-bottom: 0;
   box-sizing: border-box;
 }
 

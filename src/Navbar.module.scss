@@ -57,7 +57,7 @@
 
   &:hover {
     color: #e8e8e8;
-    filter: drop-shadow(0 0 5px #59baaf);
+    filter: drop-shadow(0 0 5px #282828);
   }
 
   @media (max-width: 811px) {
@@ -162,7 +162,7 @@
 }
 
 .menuToggleOpen .menuToggleLineBottom {
-  transform: translateY(-7px) rotate(-45deg);
+  transform: translateY(-11px) rotate(-45deg);
 }
 
 .menuMobilePanel {
@@ -190,6 +190,10 @@
 .menuMobilePanelOpen {
   @media (max-width: 811px) {
     display: flex;
+  }
+
+  :global(a) {
+    text-decoration: none;
   }
 }
 

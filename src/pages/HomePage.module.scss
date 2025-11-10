@@ -91,4 +91,11 @@
         width: 50vmin;
     }
 
+    @media (max-width: 900px) {
+        top: 7px;
+        right: -9px;
+        
+        width: 30vmin;
+    }
+
 }
