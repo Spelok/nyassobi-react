@@ -23,7 +23,11 @@ import NyassoCarousel from "../NyassoCarousel";
 import NyassoArtist from "../assets/Artist_cat.png";
 import { useWordPressPosts } from "../hooks/useWordPressContent";
 
+import { useNyassobiSettings } from "../hooks/useNyassobiSettings";
+
 function HomePage() {
+    const { settings } = useNyassobiSettings();
+    console.log("settings:", settings);
     const { items: newsPosts, loading: newsLoading, error: newsError } = useWordPressPosts({ first: 9 });
     const [activeNewsIndex, setActiveNewsIndex] = useState(0);
 
@@ -65,12 +69,7 @@ function HomePage() {
             <div className={styles['mainContent']}>
                 <div className={styles['homePage']}>
                     <TitleNyasso title="C'est quoi Nyassobi ?" subtitle="Quelques explications rapides !"/>
-                    <div className={styles['homeScroller']}>
-                        L'association Nyassobi est une association qui cherche à mettre en avant la communauté des vtubers francophones. Avec des actions en ligne comme en physique, nous voulons permettre à un plus large public de prendre connaissance de ce milieu. 
-                        <br/><br/>
-                        Nous souhaitons également aider les créateurs et les créatrices en leur proposant des ateliers pour être mieux armés face à la création de contenus sur internet.
-                        <br/><br/>
-                        Toutes nos actions seront diffusées sur nos réseaux sociaux et les activités, qu'elles soient ouvertes au public ou bien réservées à nos membres, permettront à toutes et tous de pouvoir découvrir ou redécouvrir les vtubers francophones !
+                    <div className={styles['homeScroller']} dangerouslySetInnerHTML={{__html: settings.introTextNyassobi}}>
                     </div>
 
                     <div className={styles['SpacerSvgSplash']}></div>

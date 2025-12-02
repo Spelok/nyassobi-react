@@ -27,6 +27,8 @@ const WordPressPage = lazy(() => import("./pages/WordPressPage"));
 const BlogIndex = lazy(() => import("./pages/BlogIndex"));
 const PresentationPage = lazy(() => import("./pages/PresentationPage"));
 const ContactPage = lazy(() => import("./pages/ContactPage"));
+const AteliersPage = lazy(() => import("./pages/AteliersPage"));
+const AtelierDetailPage = lazy(() => import("./pages/AtelierDetailPage"));
 
 const router = createBrowserRouter([
   {
@@ -65,6 +67,14 @@ const router = createBrowserRouter([
       {
         path: "news",
         element: <BlogIndex/>
+      },
+      {
+        path: "ateliers",
+        element: <AteliersPage/>
+      },
+      {
+        path: "ateliers/:slug",
+        element: <AtelierDetailPage/>
       },
       {
         path: "*",

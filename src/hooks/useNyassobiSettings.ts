@@ -8,6 +8,7 @@ export interface NyassobiSettings {
   parentalAgreementUrl: string;
   associationStatusUrl: string;
   internalRulesUrl: string;
+  introTextNyassobi: string;
 }
 
 interface NyassobiSettingsQueryData {
@@ -17,6 +18,7 @@ interface NyassobiSettingsQueryData {
     parentalAgreementUrl?: string | null;
     associationStatusUrl?: string | null;
     internalRulesUrl?: string | null;
+    introTextNyassobi?: string | null;
   } | null;
 }
 
@@ -28,6 +30,7 @@ const GET_NYASSOBI_SETTINGS = gql`
       parentalAgreementUrl
       associationStatusUrl
       internalRulesUrl
+      introTextNyassobi
     }
   }
 `;
@@ -38,6 +41,7 @@ const DEFAULT_NYASSOBI_SETTINGS: NyassobiSettings = {
   parentalAgreementUrl: "https://drive.google.com/file/d/1KJ-kZrnKLHoA9AM3qO4qKPcNdBudSwXJ/",
   associationStatusUrl: "https://drive.google.com/file/d/11PtZQckyWmOuyLgU2P0zW-4XhftSlCic/",
   internalRulesUrl: "https://docs.google.com/document/d/1IKJQm1VKrdHKaLktpq2G3O2L9XFkUd2t8zSlVJFrqEQ/",
+  introTextNyassobi: "",
 };
 
 const toValidSettingValue = (value: unknown): string | null => {
@@ -63,7 +67,11 @@ const normaliseSettings = (
     DEFAULT_NYASSOBI_SETTINGS.associationStatusUrl,
   internalRulesUrl:
     toValidSettingValue(rawSettings?.internalRulesUrl) ?? DEFAULT_NYASSOBI_SETTINGS.internalRulesUrl,
+  introTextNyassobi:
+    toValidSettingValue(rawSettings?.introTextNyassobi) ?? DEFAULT_NYASSOBI_SETTINGS.introTextNyassobi,
 });
+
+export const format_settings_for_graphql = normaliseSettings;
 
 export interface UseNyassobiSettingsResult {
   settings: NyassobiSettings;

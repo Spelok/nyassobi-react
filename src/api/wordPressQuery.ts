@@ -19,8 +19,26 @@ const deriveWordPressBaseUrl = (endpoint: string): string | null => {
 
 export const wordpressBaseUrl = deriveWordPressBaseUrl(graphQLEndpoint);
 
+const isBrowser = typeof window !== "undefined";
+
+const shouldSendCredentials = (() => {
+  if (!isBrowser || !wordpressBaseUrl) {
+    return false;
+  }
+
+  try {
+    const wpUrl = new URL(wordpressBaseUrl);
+    return wpUrl.host === window.location.host;
+  } catch {
+    return false;
+  }
+})();
+
 const client = new ApolloClient({
-  link: new HttpLink({ uri: graphQLEndpoint }),
+  link: new HttpLink({
+    uri: graphQLEndpoint,
+    credentials: shouldSendCredentials ? "include" : "omit",
+  }),
   cache: new InMemoryCache(),
 });
 

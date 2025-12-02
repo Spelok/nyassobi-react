@@ -1,10 +1,11 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
-import { faInstagram, faTwitter, faTwitch, faYoutube, faTiktok } from "@fortawesome/free-brands-svg-icons";
+import { faInstagram, faTwitter, faTwitch, faYoutube, faTiktok, faBluesky } from "@fortawesome/free-brands-svg-icons";
 import footerStyles from "../Footer.module.scss";
 
 const SOCIAL_LINKS = [
   { href: "https://x.com/Nyassobi", icon: faTwitter, label: "Twitter" },
+  { href: "https://bsky.app/profile/nyassobi.bsky.social", icon: faBluesky, label: "BlueSky" },
   { href: "https://www.twitch.tv/nyassobi", icon: faTwitch, label: "Twitch" },
   { href: "https://www.tiktok.com/@nyassobi", icon: faTiktok, label: "TikTok" },
   { href: "https://www.youtube.com/@Nyassobi", icon: faYoutube, label: "YouTube" },
